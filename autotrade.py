@@ -8,6 +8,7 @@ import json
 from openai import OpenAI
 import schedule
 import time
+import requests
 
 # Setup
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
@@ -97,17 +98,33 @@ def analyze_data_with_gpt4(data_json):
             print("No instructions found.")
             return None
 
+
+
         current_status = get_current_status()
-        response = client.chat.completions.create(
-            model="gpt-4-turbo-preview",
-            messages=[
+
+        url = "http://localhost:11434/api/chat"
+
+        data = {
+            "model": "mistral",
+            "messages" : [
                 {"role": "system", "content": instructions},
                 {"role": "user", "content": data_json},
                 {"role": "user", "content": current_status}
             ],
-            response_format={"type":"json_object"}
-        )
-        return response.choices[0].message.content
+        }
+
+        response = requests.post(url, json=data)
+        return response;
+        # response = client.chat.completions.create(
+        #     model="gpt-4-turbo-preview",
+        #     messages=[
+        #         {"role": "system", "content": instructions},
+        #         {"role": "user", "content": data_json},
+        #         {"role": "user", "content": current_status}
+        #     ],
+        #     response_format={"type":"json_object"}
+        # )
+        # return response.choices[0].message.content
     except Exception as e:
         print(f"Error in analyzing data with GPT-4: {e}")
         return None
@@ -137,21 +154,21 @@ def make_decision_and_execute():
     print("Making decision and executing...")
     data_json = fetch_and_prepare_data()
     advice = analyze_data_with_gpt4(data_json)
-
-    try:
-        decision = json.loads(advice)
-        print(decision)
-        if decision.get('decision') == "buy":
-            execute_buy()
-        elif decision.get('decision') == "sell":
-            execute_sell()
-    except Exception as e:
-        print(f"Failed to parse the advice as JSON: {e}")
+    print(advice)
+    # try:
+    #     decision = json.loads(advice)
+    #     print(decision)
+    #     if decision.get('decision') == "buy":
+    #         execute_buy()
+    #     elif decision.get('decision') == "sell":
+    #         execute_sell()
+    # except Exception as e:
+    #     print(f"Failed to parse the advice as JSON: {e}")
 
 if __name__ == "__main__":
     make_decision_and_execute()
-    schedule.every().hour.at(":01").do(make_decision_and_execute)
+    # schedule.every().hour.at(":01").do(make_decision_and_execute)
 
-    while True:
-        schedule.run_pending()
-        time.sleep(1)
+    # while True:
+    #     schedule.run_pending()
+    #     time.sleep(1)
