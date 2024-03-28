@@ -103,18 +103,24 @@ def analyze_data_with_gpt4(data_json):
         current_status = get_current_status()
 
         url = "http://localhost:11434/api/chat"
-
+        headers = {"Content-Type" : "application/json"}
         data = {
-            "model": "mistral",
-            "messages" : [
-                {"role": "system", "content": instructions},
+            "model": "cointrader",
+#            "prompt": "Why is the sky blue?",
+           "messages" : [
+               # {"role": "system", "content": instructions},
                 {"role": "user", "content": data_json},
                 {"role": "user", "content": current_status}
+#               {"role" : "user" , "content" :"why is sky blue"}
             ],
+            "stream" : False,
+            "format" : "json"
         }
 
-        response = requests.post(url, json=data)
-        return response;
+        response = requests.post(url, headers=headers, data= json.dumps(data))
+
+        print(response.json())
+        return response
         # response = client.chat.completions.create(
         #     model="gpt-4-turbo-preview",
         #     messages=[
