@@ -114,7 +114,8 @@ def analyze_data_with_gpt4(data_json):
 #               {"role" : "user" , "content" :"why is sky blue"}
             ],
             "stream" : False,
-            "format" : "json"
+            "format" : "json",
+            "temperatrue" : 0.5
         }
 
         response = requests.post(url, headers=headers, data= json.dumps(data))
