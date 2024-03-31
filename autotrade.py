@@ -105,7 +105,7 @@ def analyze_data_with_gpt4(data_json):
         url = "http://localhost:11434/api/chat"
         headers = {"Content-Type" : "application/json"}
         data = {
-            "model": "cointrader",
+            "model": "llama2:13b",
 #            "prompt": "Why is the sky blue?",
            "messages" : [
                # {"role": "system", "content": instructions},
