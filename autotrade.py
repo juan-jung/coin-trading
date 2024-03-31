@@ -108,7 +108,7 @@ def analyze_data_with_gpt4(data_json):
             "model": "llama2:13b",
 #            "prompt": "Why is the sky blue?",
            "messages" : [
-               # {"role": "system", "content": instructions},
+               {"role": "system", "content": instructions},
                 {"role": "user", "content": data_json},
                 {"role": "user", "content": current_status}
 #               {"role" : "user" , "content" :"why is sky blue"}
