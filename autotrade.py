@@ -78,15 +78,31 @@ def fetch_and_prepare_data():
 
     return json.dumps(combined_data)
 
-def analyze_data_with_ollama(data_json):
+def get_instructions(file_path):
     try:
+        with open(file_path, "r", encoding="utf-8") as file:
+            instructions = file.read()
+        return instructions
+    except FileNotFoundError:
+        print("File not found.")
+    except Exception as e:
+        print("An error occurred while reading the file:", e)
+
+def analyze_data_with_ollama(data_json):
+    instructions_path = "./coin-trading/instructions.md"
+    try:
+        instructions = get_instructions(instructions_path)
+        if not instructions:
+            print("No instructions found.")
+            return None
         current_status = get_current_status()
 
         url = "http://localhost:11434/api/chat"
         headers = {"Content-Type" : "application/json"}
         data = {
-            "model": "coin-trader",
+            "model": "llama2:70b",
             "messages" : [
+                    {"role": "system", "content": instructions},
                     {"role": "user", "content": data_json},
                     {"role": "user", "content": current_status}
                 ],
