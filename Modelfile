@@ -1,4 +1,4 @@
-FROM llama2:70b
+FROM llama2:13b
 
 SYSTEM """
 # Bitcoin Investment Automation Instruction

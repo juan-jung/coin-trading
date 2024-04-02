@@ -89,20 +89,20 @@ def get_instructions(file_path):
         print("An error occurred while reading the file:", e)
 
 def analyze_data_with_ollama(data_json):
-    instructions_path = "./coin-trading/instructions.md"
+    # instructions_path = "./coin-trading/instructions.md"
     try:
-        instructions = get_instructions(instructions_path)
-        if not instructions:
-            print("No instructions found.")
-            return None
+        # instructions = get_instructions(instructions_path)
+        # if not instructions:
+        #     print("No instructions found.")
+        #     return None
         current_status = get_current_status()
 
         url = "http://localhost:11434/api/chat"
         headers = {"Content-Type" : "application/json"}
         data = {
-            "model": "llama2:70b",
+            "model": "coin-trader",
             "messages" : [
-                    {"role": "system", "content": instructions},
+                    # {"role": "system", "content": instructions},
                     {"role": "user", "content": data_json},
                     {"role": "user", "content": current_status}
                 ],
