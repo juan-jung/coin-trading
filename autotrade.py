@@ -5,13 +5,11 @@ import pyupbit
 import pandas as pd
 import pandas_ta as ta
 import json
-from openai import OpenAI
 import schedule
 import time
 import requests
 
 # Setup
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 upbit = pyupbit.Upbit(os.getenv("UPBIT_ACCESS_KEY"), os.getenv("UPBIT_SECRET_KEY"))
 
 def get_current_status():
@@ -80,39 +78,18 @@ def fetch_and_prepare_data():
 
     return json.dumps(combined_data)
 
-def get_instructions(file_path):
+def analyze_data_with_ollama(data_json):
     try:
-        with open(file_path, "r", encoding="utf-8") as file:
-            instructions = file.read()
-        return instructions
-    except FileNotFoundError:
-        print("File not found.")
-    except Exception as e:
-        print("An error occurred while reading the file:", e)
-
-def analyze_data_with_gpt4(data_json):
-    instructions_path = "instructions.md"
-    try:
-        instructions = get_instructions(instructions_path)
-        if not instructions:
-            print("No instructions found.")
-            return None
-
-
-
         current_status = get_current_status()
 
         url = "http://localhost:11434/api/chat"
         headers = {"Content-Type" : "application/json"}
         data = {
-            "model": "llama2:13b",
-#            "prompt": "Why is the sky blue?",
-           "messages" : [
-               {"role": "system", "content": instructions},
-                {"role": "user", "content": data_json},
-                {"role": "user", "content": current_status}
-#               {"role" : "user" , "content" :"why is sky blue"}
-            ],
+            "model": "coin-trader",
+            "messages" : [
+                    {"role": "user", "content": data_json},
+                    {"role": "user", "content": current_status}
+                ],
             "stream" : False,
             "format" : "json",
             "temperatrue" : 0.5
@@ -122,18 +99,8 @@ def analyze_data_with_gpt4(data_json):
 
         print(response.json())
         return response
-        # response = client.chat.completions.create(
-        #     model="gpt-4-turbo-preview",
-        #     messages=[
-        #         {"role": "system", "content": instructions},
-        #         {"role": "user", "content": data_json},
-        #         {"role": "user", "content": current_status}
-        #     ],
-        #     response_format={"type":"json_object"}
-        # )
-        # return response.choices[0].message.content
     except Exception as e:
-        print(f"Error in analyzing data with GPT-4: {e}")
+        print(f"Error in analyzing data with ollama: {e}")
         return None
 
 def execute_buy():
@@ -160,7 +127,7 @@ def execute_sell():
 def make_decision_and_execute():
     print("Making decision and executing...")
     data_json = fetch_and_prepare_data()
-    advice = analyze_data_with_gpt4(data_json)
+    advice = analyze_data_with_ollama(data_json)
     print(advice)
     # try:
     #     decision = json.loads(advice)

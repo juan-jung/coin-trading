@@ -1,5 +1,4 @@
 python-dotenv
-openai
 pyupbit
 pyjwt
 pandas
